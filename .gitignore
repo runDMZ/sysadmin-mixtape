@@ -1,0 +1,9 @@
+# Exports produced by the scripts contain tenant data: never commit them
+*.csv
+Export-Teams-*/
+Export-SharePoint-*/
+
+# Autopilot USB kit: the real config holds a client secret
+powershell/m365/intune/autopilot-usb/autopilot.config.psd1
+powershell/m365/intune/autopilot-usb/hashes/
+powershell/m365/intune/autopilot-usb/autopilot.log
