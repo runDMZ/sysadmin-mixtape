@@ -69,7 +69,7 @@ These scripts come from real administration work on a Microsoft 365 tenant share
 
 ## Bash · Linux
 
-Small scripts, no dependency beyond the usual tools, exit codes that cron and monitoring understand: **0 OK, 1 warning, 2 critical**. All accept `-h`.
+Small scripts, no dependency beyond the usual tools, exit codes that cron and monitoring understand: **0 OK, 1 warning, 2 critical**. All accept `-h`. Each one is explained with an example and its output in [bash/linux/README.md](bash/linux/README.md).
 
 | Script | What it does | Changes anything? |
 |---|---|---|
