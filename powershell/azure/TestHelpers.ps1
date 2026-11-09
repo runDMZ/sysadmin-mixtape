@@ -2,7 +2,7 @@
 # No Azure connection is used: every Az cmdlet the scripts call is mocked. The Az
 # modules must still be installed, because Pester can only mock commands that exist.
 
-function Set-AzConnectionMock {
+function Initialize-AzConnectionMock {
     # A connected context and one enabled subscription
     Mock Get-AzContext { [pscustomobject]@{ Tenant = [pscustomobject]@{ Id = 'tenant-1' } } }
     Mock Get-AzSubscription { [pscustomobject]@{ Name = 'Lab'; Id = 'sub-1'; State = 'Enabled' } }

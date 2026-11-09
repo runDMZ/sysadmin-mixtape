@@ -51,7 +51,7 @@ $HashDir = Join-Path $UsbRoot 'hashes'
 $LogFile = Join-Path $UsbRoot 'autopilot.log'
 $Serial = (Get-CimInstance Win32_BIOS).SerialNumber.Trim()
 
-function Write-Log {
+function Write-AutopilotLog {
     param([string] $Message)
     $line = '{0} [{1}] {2}' -f (Get-Date -Format 'yyyy-MM-dd HH:mm:ss'), $Serial, $Message
     Write-Information $line -InformationAction Continue
@@ -59,7 +59,7 @@ function Write-Log {
 }
 
 try {
-    Write-Log ("Registration started (group tag: {0})" -f $(if ($GroupTag) { $GroupTag } else { 'none' }))
+    Write-AutopilotLog ("Registration started (group tag: {0})" -f $(if ($GroupTag) { $GroupTag } else { 'none' }))
 
     if (-not (Test-Path $ConfigPath)) {
         throw "Configuration file not found: $ConfigPath. Copy autopilot.config.example.psd1 to autopilot.config.psd1 and fill it in."
@@ -85,7 +85,7 @@ try {
     # 1. Local copy of the hash: fallback for a manual CSV import in Intune
     New-Item -ItemType Directory -Path $HashDir -Force | Out-Null
     & $autopilotScript -OutputFile (Join-Path $HashDir "$Serial.csv")
-    Write-Log "Hash saved to hashes\$Serial.csv"
+    Write-AutopilotLog "Hash saved to hashes\$Serial.csv"
 
     # 2. Direct upload to Autopilot, app-only
     $params = @{
@@ -98,9 +98,9 @@ try {
     if ($GroupTag) { $params.GroupTag = $GroupTag }
 
     & $autopilotScript @params
-    Write-Log 'Autopilot registration completed'
+    Write-AutopilotLog 'Autopilot registration completed'
 } catch {
-    Write-Log "ERROR: $($_.Exception.Message)"
-    Write-Log 'The hash is still available in hashes\ for a manual CSV import.'
+    Write-AutopilotLog "ERROR: $($_.Exception.Message)"
+    Write-AutopilotLog 'The hash is still available in hashes\ for a manual CSV import.'
     exit 1
 }

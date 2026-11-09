@@ -5,7 +5,7 @@ BeforeAll {
 
 Describe 'Get-AzResourceInventory' {
     BeforeAll {
-        Set-AzConnectionMock
+        Initialize-AzConnectionMock
         Mock Get-AzResource {
             [pscustomobject]@{ Name = 'vm1'; ResourceType = 'Microsoft.Compute/virtualMachines'; ResourceGroupName = 'rg-a'
                 Location = 'westeurope'; ResourceId = 'r1'; Tags = @{ Owner = 'alice'; Environment = 'lab' } }

@@ -5,7 +5,7 @@ BeforeAll {
 
 Describe 'Test-AzTagCompliance' {
     BeforeAll {
-        Set-AzConnectionMock
+        Initialize-AzConnectionMock
         Mock Get-AzResource {
             [pscustomobject]@{ Name = 'vm-ok'; ResourceType = 'Microsoft.Compute/virtualMachines'; ResourceGroupName = 'rg-a'; ResourceId = 'r1'
                 Tags = @{ owner = 'alice'; ENVIRONMENT = 'prod' } }

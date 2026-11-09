@@ -5,7 +5,7 @@ BeforeAll {
 
 Describe 'Stop-AzVmByTag' {
     BeforeAll {
-        Set-AzConnectionMock
+        Initialize-AzConnectionMock
         Mock Get-AzVM {
             $tags = [System.Collections.Generic.Dictionary[string, string]]::new()
             $tags['autoshutdown'] = 'TRUE'

@@ -5,7 +5,7 @@ BeforeAll {
 
 Describe 'Find-AzOrphanedResource' {
     BeforeAll {
-        Set-AzConnectionMock
+        Initialize-AzConnectionMock
         Mock Get-AzDisk {
             [pscustomobject]@{ Name = 'disk-free'; ResourceGroupName = 'rg-a'; Location = 'westeurope'; Id = 'd1'
                 DiskState = 'Unattached'; ManagedBy = $null; DiskSizeGB = 128; Sku = [pscustomobject]@{ Name = 'Premium_LRS' }; TimeCreated = (Get-Date) }

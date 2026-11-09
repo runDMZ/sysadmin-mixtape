@@ -14,7 +14,7 @@ jobs:
   bash:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install bats
         run: sudo apt-get update -q && sudo apt-get install -y -q bats
       - name: shellcheck
@@ -28,7 +28,7 @@ jobs:
       run:
         shell: pwsh
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       - name: Install modules
         # Az modules are needed even though nothing connects to Azure: Pester can only mock commands that exist
         run: |
