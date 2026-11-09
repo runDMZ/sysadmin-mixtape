@@ -20,7 +20,7 @@ sysadmin-mixtape/
     └── linux/     server health, certificates, mail DNS, backups, local accounts
 ```
 
-Next to a script, a file with the same name ending in `.Tests.ps1` (PowerShell) or `.bats` (Bash) is its **automated test**: it runs the script against fake data and checks the answers.
+Next to a script, a file with the same name ending in `.Tests.ps1` (PowerShell) or `.bats` (Bash) is its **automated test**: it runs the script against fake data and checks the answers. They run at every push on GitHub Actions.
 
 Security audits (Azure RBAC, network exposure, storage) live in [security-beats](https://github.com/runDMZ/security-beats).
 
@@ -95,7 +95,7 @@ In cron, a non-zero exit code is enough to get an email: `*/30 * * * * server-he
 
 ## Tests
 
-A test file sits next to each tested script, with the same name: `Stop-AzVmByTag.ps1` is checked by `Stop-AzVmByTag.Tests.ps1`, `backup-rotate.sh` by `backup-rotate.bats`. A test runs the script against fake data and checks the answer, so no real server or Azure account is touched. Run them after changing a script, before pushing.
+A test file sits next to each tested script, with the same name: `Stop-AzVmByTag.ps1` is checked by `Stop-AzVmByTag.Tests.ps1`, `backup-rotate.sh` by `backup-rotate.bats`. A test runs the script against fake data and checks the answer, so no real server or Azure account is touched. Run them after changing a script, before pushing. Tests run automatically on [GitHub Actions](https://docs.github.com/actions) at every push: the badge at the top shows the result of the last run. Scripts named `Test-...` (such as `Test-AzTagCompliance.ps1`) are not tests: in PowerShell the verb `Test` means *check something*, like `Test-Path`. Their own tests are the `.Tests.ps1` files.
 
 **Bash**: 16 [bats](https://github.com/bats-core/bats-core) tests. Commands such as `df` and `dig` are replaced by stubs; certificates (one served by a local `openssl s_server`), backups and account files are real files in a temporary directory. They check, for example, that more than 10 SPF lookups is critical, that a restore gives back the files minus the excluded ones, or that a dry run deletes nothing. Scripts pass `shellcheck` with no warning.
 
