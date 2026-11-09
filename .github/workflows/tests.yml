@@ -35,6 +35,19 @@ jobs:
           Set-PSRepository PSGallery -InstallationPolicy Trusted
           Install-Module Pester -MinimumVersion 5.5 -Scope CurrentUser
           Install-Module PSScriptAnalyzer, Az.Accounts, Az.Resources, Az.Compute, Az.Network -Scope CurrentUser
+      - name: Syntax
+        # Parses every script, tested or not: a syntax error fails here even without a test
+        run: |
+          $failed = $false
+          foreach ($file in Get-ChildItem ./powershell -Recurse -Filter *.ps1) {
+              $errors = $null
+              $null = [System.Management.Automation.Language.Parser]::ParseFile($file.FullName, [ref] $null, [ref] $errors)
+              foreach ($e in $errors) {
+                  Write-Output ('::error file={0},line={1}::{2}' -f $file.FullName, $e.Extent.StartLineNumber, $e.Message)
+                  $failed = $true
+              }
+          }
+          if ($failed) { exit 1 }
       - name: PSScriptAnalyzer
         run: |
           $results = Invoke-ScriptAnalyzer -Path ./powershell -Recurse -Settings ./PSScriptAnalyzerSettings.psd1

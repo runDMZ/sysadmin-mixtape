@@ -25,9 +25,10 @@ Describe 'Stop-AzVmByTag' {
     }
     It 'switches subscription for real even with -WhatIf' {
         $null = & $script:Path -WhatIf
-        # -WhatIf must be passed explicitly as $false, not just left out
+        # -WhatIf must be passed explicitly as $false, not just left out.
+        # $PesterBoundParameters holds what the script passed to the mocked command.
         Should -Invoke Set-AzContext -ParameterFilter {
-            $Subscription -eq 'sub-1' -and $PSBoundParameters.ContainsKey('WhatIf') -and -not $WhatIf
+            $Subscription -eq 'sub-1' -and $PesterBoundParameters.ContainsKey('WhatIf') -and -not $PesterBoundParameters['WhatIf']
         }
     }
     It 'stops only the running VM carrying the tag, matching the tag without case' {

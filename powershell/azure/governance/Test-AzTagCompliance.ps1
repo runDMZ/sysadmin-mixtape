@@ -88,7 +88,8 @@ try {
 
         foreach ($target in $targets) {
             $checked++
-            $missing = Get-MissingTag -Tags $target.Tags -Required $RequiredTag
+            # @() so that "no missing tag" is an empty array, not $null (StrictMode)
+            $missing = @(Get-MissingTag -Tags $target.Tags -Required $RequiredTag)
             if ($missing.Count -eq 0) { continue }
             $results.Add([pscustomobject]@{
                     SubscriptionName = $sub.Name
