@@ -1,5 +1,5 @@
 @{
-    # Run with: Invoke-ScriptAnalyzer -Path ./scripts -Recurse -Settings ./PSScriptAnalyzerSettings.psd1
+    # Run with: Invoke-ScriptAnalyzer -Path ./powershell -Recurse -Settings ./PSScriptAnalyzerSettings.psd1
     Severity     = @('Error', 'Warning', 'Information')
     IncludeDefaultRules = $true
     Rules = @{

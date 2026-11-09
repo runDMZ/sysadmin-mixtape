@@ -1,0 +1,44 @@
+# Runs every test on GitHub's machines at each push: Bash scripts with shellcheck
+# and bats, PowerShell scripts with PSScriptAnalyzer and Pester.
+name: tests
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  bash:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install bats
+        run: sudo apt-get update -q && sudo apt-get install -y -q bats
+      - name: shellcheck
+        run: shellcheck bash/linux/*.sh
+      - name: bats
+        run: bats bash/linux
+
+  powershell:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        shell: pwsh
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install modules
+        # Az modules are needed even though nothing connects to Azure: Pester can only mock commands that exist
+        run: |
+          Set-PSRepository PSGallery -InstallationPolicy Trusted
+          Install-Module Pester -MinimumVersion 5.5 -Scope CurrentUser
+          Install-Module PSScriptAnalyzer, Az.Accounts, Az.Resources, Az.Compute, Az.Network -Scope CurrentUser
+      - name: PSScriptAnalyzer
+        run: |
+          $results = Invoke-ScriptAnalyzer -Path ./powershell -Recurse -Settings ./PSScriptAnalyzerSettings.psd1
+          $results | Format-Table Severity, RuleName, ScriptName, Line, Message -AutoSize -Wrap
+          if ($results | Where-Object Severity -in 'Error', 'Warning') { exit 1 }
+      - name: Pester
+        run: Invoke-Pester -Path ./powershell -Output Detailed -CI
