@@ -1,6 +1,6 @@
 BeforeAll {
-    . (Join-Path $PSScriptRoot 'Common.ps1')
-    $script:Path = Get-ScriptPath 'powershell/azure/cost/Find-AzOrphanedResource.ps1'
+    . (Join-Path $PSScriptRoot '../TestHelpers.ps1')
+    $script:Path = $PSCommandPath -replace '\.Tests\.ps1$', '.ps1'
 }
 
 Describe 'Find-AzOrphanedResource' {

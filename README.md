@@ -14,11 +14,11 @@ sysadmin-mixtape/
 ├── powershell/
 │   ├── azure/     inventory, cost, governance, operations
 │   └── m365/      entra, exchange, intune, sharepoint, teams
-├── bash/
-│   ├── linux/     server health, certificates, mail DNS, backups, local accounts
-│   └── tests/     bats tests
-└── tests/         Pester tests
+└── bash/
+    └── linux/     server health, certificates, mail DNS, backups, local accounts
 ```
+
+Next to a script, a file with the same name ending in `.Tests.ps1` (PowerShell) or `.bats` (Bash) is its **automated test**: it runs the script against fake data and checks the answers.
 
 Security audits (Azure RBAC, network exposure, storage) live in [security-beats](https://github.com/runDMZ/security-beats).
 
@@ -93,24 +93,24 @@ In cron, a non-zero exit code is enough to get an email: `*/30 * * * * server-he
 
 ## Tests
 
-**Bash**: 16 [bats](https://github.com/bats-core/bats-core) tests, run on Linux. Commands such as `df` and `dig` are replaced by stubs; certificates (one served by a local `openssl s_server`), backups and account files are real files in a temporary directory. They check, for example, that more than 10 SPF lookups is critical, that a restore gives back the files minus the excluded ones, or that a dry run deletes nothing. Scripts pass `shellcheck` with no warning.
+A test file sits next to each tested script, with the same name: `Stop-AzVmByTag.ps1` is checked by `Stop-AzVmByTag.Tests.ps1`, `backup-rotate.sh` by `backup-rotate.bats`. A test runs the script against fake data and checks the answer, so no real server or Azure account is touched. Run them after changing a script, before pushing.
+
+**Bash**: 16 [bats](https://github.com/bats-core/bats-core) tests. Commands such as `df` and `dig` are replaced by stubs; certificates (one served by a local `openssl s_server`), backups and account files are real files in a temporary directory. They check, for example, that more than 10 SPF lookups is critical, that a restore gives back the files minus the excluded ones, or that a dry run deletes nothing. Scripts pass `shellcheck` with no warning.
 
 ```bash
-bats bash/tests
+bats bash/linux
 shellcheck bash/linux/*.sh
 ```
 
-**PowerShell**: the Azure scripts have Pester tests that replace every Az cmdlet with a mock, so they run without an Azure account. The Az modules must still be installed, because Pester can only mock commands that exist.
+**PowerShell**: 19 Pester tests for the Azure scripts. Every Az cmdlet is replaced by a mock returning fake Azure objects; the Az modules must still be installed, because Pester can only mock commands that exist. They check, for example, that a public IP used by a NAT gateway is not reported as unused, or that `-WhatIf` never calls `Stop-AzVM`.
 
 ```powershell
 Install-Module Pester -MinimumVersion 5.5 -Scope CurrentUser
 Install-Module PSScriptAnalyzer -Scope CurrentUser
 
-Invoke-Pester ./tests -Output Detailed
+Invoke-Pester ./powershell -Output Detailed
 Invoke-ScriptAnalyzer -Path ./powershell -Recurse -Settings ./PSScriptAnalyzerSettings.psd1
 ```
-
-19 test cases check the logic of the Azure scripts against fake Azure objects: for example, that a public IP used by a NAT gateway is not reported as unused, or that `-WhatIf` never calls `Stop-AzVM`.
 
 ## Conventions
 

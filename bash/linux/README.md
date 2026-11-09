@@ -136,4 +136,4 @@ Findings:
 
 ---
 
-Tests: `bats bash/tests` (see the [main README](../../README.md#tests)).
+Each script has its test next to it (`name.bats`): run them all with `bats bash/linux` (see [Tests](../../README.md#tests)).
