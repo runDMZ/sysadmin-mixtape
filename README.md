@@ -1,5 +1,7 @@
 # 🎧 sysadmin-mixtape
 
+[![tests](https://github.com/runDMZ/sysadmin-mixtape/actions/workflows/tests.yml/badge.svg)](https://github.com/runDMZ/sysadmin-mixtape/actions/workflows/tests.yml)
+
 > *Every track solves a problem I actually had.*
 
 Scripts for the everyday work of a sysadmin on Microsoft clouds and Linux: know what is deployed, cut what costs money for nothing, inventory a tenant, enrol devices, automate the repetitive parts. Organised by language, then by platform.
