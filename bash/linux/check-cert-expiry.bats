@@ -12,7 +12,13 @@ make_cert() { # make_cert FILE DAYS CN
     make_cert warn.pem 20 warn.example
     make_cert crit.pem 3 crit.example
     make_cert tmp.pem 1 old.example
-    openssl x509 -in "$T/tmp.pem" -signkey "$T/tmp.pem.key" -days -1 -out "$T/expired.pem" 2>/dev/null
+    # OpenSSL 3.4+ sets dates directly; older versions accept a negative duration
+    if openssl x509 -help 2>&1 | grep -q -- '-not_after'; then
+        openssl x509 -in "$T/tmp.pem" -key "$T/tmp.pem.key" -not_before 20200101000000Z \
+            -not_after 20200102000000Z -out "$T/expired.pem" 2>/dev/null
+    else
+        openssl x509 -in "$T/tmp.pem" -signkey "$T/tmp.pem.key" -days -1 -out "$T/expired.pem" 2>/dev/null
+    fi
 
     run "$BIN/check-cert-expiry.sh" -F "$T/ok.pem"
     [ "$status" -eq 0 ]

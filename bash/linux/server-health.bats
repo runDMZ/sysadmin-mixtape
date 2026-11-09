@@ -9,6 +9,9 @@ echo 'Filesystem 1024-blocks Used Available Capacity Mounted on'
 echo \"/dev/sda1 100 \$p 0 \$p% /\""
     printf 'MemTotal: 1000000 kB\nMemAvailable: %s kB\n' "$2" > "$T/meminfo"
     printf '%s 0.10 0.10 1/100 1\n' "$3" > "$T/loadavg"
+    # The real machine's services and clock must not change the result
+    stub systemctl 'exit 0'
+    stub timedatectl 'echo yes'
     export MEMINFO="$T/meminfo" LOADAVG="$T/loadavg" REBOOT_FLAG="$T/reboot-required"
 }
 
