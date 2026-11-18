@@ -18,9 +18,9 @@ jobs:
       - name: Install bats
         run: sudo apt-get update -q && sudo apt-get install -y -q bats
       - name: shellcheck
-        run: shellcheck bash/linux/*.sh
+        run: shellcheck bash/*/*.sh
       - name: bats
-        run: bats bash/linux
+        run: bats bash/linux bash/m365
 
   powershell:
     runs-on: ubuntu-latest
