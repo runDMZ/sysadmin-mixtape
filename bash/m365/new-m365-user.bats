@@ -103,3 +103,14 @@ EOF
     run "$BIN/new-m365-user.sh" -Z
     [ "$status" -eq 3 ]
 }
+
+@test "m365-user: -s adds a suffix to the UPN and the display name" {
+    az_stub
+    run "$BIN/new-m365-user.sh" -f Jean -l Dupont -d contoso.com -L none -s Admin -y
+    [ "$status" -eq 0 ]
+    [ "$(jq -r .userPrincipalName "$T/user.json")" = jean.dupont.admin@contoso.com ]
+    [ "$(jq -r .mailNickname "$T/user.json")" = jean.dupont.admin ]
+    [ "$(jq -r .displayName "$T/user.json")" = "Jean Dupont (Admin)" ]
+    run "$BIN/new-m365-user.sh" -f Jean -d contoso.com -L none -s '!!!' -y
+    [ "$status" -eq 3 ]
+}

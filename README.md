@@ -98,7 +98,7 @@ Microsoft 365 administration from a Linux workstation with **Azure CLI only** (`
 
 | Script | What it does | Changes anything? | Minimum role |
 |---|---|---|---|
-| [`new-m365-user.sh`](bash/m365/new-m365-user.sh) | Creates a user and assigns a licence: UPN built from the names (accents removed, first or last name alone accepted), checks the domain, the free licence seats and duplicates before writing, temporary password printed once; dry run with `-N` | **Yes** (creates the user) | User Administrator |
+| [`new-m365-user.sh`](bash/m365/new-m365-user.sh) | Creates a user and assigns a licence: UPN built from the names (accents removed, first or last name alone accepted, `-s admin` suffix for admin accounts), checks the domain, the free licence seats and duplicates before writing, temporary password printed once; dry run with `-N` | **Yes** (creates the user) | User Administrator |
 
 ```bash
 ./bash/m365/new-m365-user.sh                    # interactive, menus for domain and licence
@@ -111,7 +111,7 @@ Microsoft 365 administration from a Linux workstation with **Azure CLI only** (`
 
 A test file sits next to each tested script, with the same name: `Stop-AzVmByTag.ps1` is checked by `Stop-AzVmByTag.Tests.ps1`, `backup-rotate.sh` by `backup-rotate.bats`. A test runs the script against fake data and checks the answer, so no real server or Azure account is touched. Run them after changing a script, before pushing. Tests run automatically on [GitHub Actions](https://docs.github.com/actions) at every push: the badge at the top shows the result of the last run. Scripts named `Test-...` (such as `Test-AzTagCompliance.ps1`) are not tests: in PowerShell the verb `Test` means *check something*, like `Test-Path`. Their own tests are the `.Tests.ps1` files.
 
-**Bash**: 22 [bats](https://github.com/bats-core/bats-core) tests. Commands such as `df`, `dig` and `az` are replaced by stubs; certificates (one served by a local `openssl s_server`), backups and account files are real files in a temporary directory. They check, for example, that more than 10 SPF lookups is critical, that a restore gives back the files minus the excluded ones, that a dry run deletes nothing, or that a user is never created when its licence has no free seat. Scripts pass `shellcheck` with no warning.
+**Bash**: 23 [bats](https://github.com/bats-core/bats-core) tests. Commands such as `df`, `dig` and `az` are replaced by stubs; certificates (one served by a local `openssl s_server`), backups and account files are real files in a temporary directory. They check, for example, that more than 10 SPF lookups is critical, that a restore gives back the files minus the excluded ones, that a dry run deletes nothing, or that a user is never created when its licence has no free seat. Scripts pass `shellcheck` with no warning.
 
 ```bash
 bats bash/linux bash/m365
