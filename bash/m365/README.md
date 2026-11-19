@@ -26,6 +26,7 @@ new-m365-user.sh                         # interactive: asks the names, menus fo
 new-m365-user.sh -f Jean -l Dupont -d contoso.com -L SPB -D Sales -t "Account manager"
 new-m365-user.sh -f Jean -d contoso.com -L none            # first name only, no licence
 new-m365-user.sh -f Jean -l Dupont -d contoso.com -L SPB -N  # dry run
+new-m365-user.sh -f Jean -l Dupont -d contoso.com -L none -s admin  # jean.dupont.admin@, "Jean Dupont (admin)"
 ```
 
 ```
@@ -50,6 +51,7 @@ Create this user? [y/N] y
 | `-L` | — | licence `skuPartNumber`, or `none` |
 | `-c` / `-D` / `-t` | `companyName` / `department` / `jobTitle` | optional |
 | `-u` | `usageLocation` | 2-letter country code, `FR` by default |
+| `-s` | — | suffix for a second account of the same person: `-s admin` → `jean.dupont.admin@…`, display name `Jean Dupont (admin)` |
 | `-y` | — | no confirmation (for automation) |
 | `-N` | — | dry run: all checks, no write |
 

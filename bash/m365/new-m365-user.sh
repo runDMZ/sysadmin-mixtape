@@ -15,6 +15,7 @@
 #   new-m365-user.sh                                   # interactive, with menus
 #   new-m365-user.sh -f Jean -l Dupont -d contoso.com -L SPB -D Sales -t "Account manager"
 #   new-m365-user.sh -f Jean -d contoso.com -L none    # first name only, no licence
+#   new-m365-user.sh -f Jean -l Dupont -d contoso.com -L none -s admin  # jean.dupont.admin@
 #   new-m365-user.sh -f Jean -l Dupont -d contoso.com -L SPB -N   # dry run
 #
 # Requires: az (az login --tenant TENANT --allow-no-subscriptions), jq, openssl.
@@ -31,6 +32,8 @@ Usage: new-m365-user.sh [-f FIRST] [-l LAST] [-d DOMAIN] [-L SKU] [options]
               or "none"; menu if missing
   -c COMPANY  companyName      -D DEPT  department      -t TITLE  jobTitle
   -u COUNTRY  usageLocation, ISO 3166 code (default FR), required for a licence
+  -s SUFFIX   add .SUFFIX to the UPN and (SUFFIX) to the display name, for a
+              second account of the same person: -s admin -> jean.dupont.admin@
   -y          do not ask for confirmation
   -N          dry run: run the checks, show what would be created, write nothing
   -h          this help
@@ -41,11 +44,11 @@ EOF
 }
 
 GRAPH=https://graph.microsoft.com/v1.0
-first='' last='' domain='' sku='' company='' dept='' title='' country=FR
+first='' last='' domain='' sku='' company='' dept='' title='' suffix='' country=FR
 DRY=0 YES=0 ASK_ALL=0
 (($# == 0)) && ASK_ALL=1
 
-while getopts ':f:l:d:L:c:D:t:u:yNh' opt; do
+while getopts ':f:l:d:L:c:D:t:u:s:yNh' opt; do
     case $opt in
         f) first=$OPTARG ;;
         l) last=$OPTARG ;;
@@ -55,6 +58,7 @@ while getopts ':f:l:d:L:c:D:t:u:yNh' opt; do
         D) dept=$OPTARG ;;
         t) title=$OPTARG ;;
         u) country=$OPTARG ;;
+        s) suffix=$OPTARG ;;
         y) YES=1 ;;
         N) DRY=1 ;;
         h) usage; exit 0 ;;
@@ -135,6 +139,13 @@ nick=$(printf '%s.%s' "$(normalize "$first")" "$(normalize "$last")" | sed -E 's
 [[ -n $nick ]] || die "cannot build an identifier from this name" 3
 upn=$nick@$domain
 display=$(printf '%s %s' "$first" "$last" | sed -E 's/^[[:space:]]+|[[:space:]]+$//g')
+if [[ -n $suffix ]]; then
+    suffix_norm=$(normalize "$suffix")
+    [[ -n $suffix_norm ]] || die "SUFFIX must contain letters or digits" 3
+    nick=$nick.$suffix_norm
+    upn=$nick@$domain
+    display="$display ($suffix)"
+fi
 
 if az rest --method GET --url "$GRAPH/users/$upn?\$select=id" --only-show-errors >/dev/null 2>&1; then
     die "$upn already exists"
